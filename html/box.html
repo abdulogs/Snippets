@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom cart</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button {
+        background-color: none;
+        border: 1px solid #ddd;
+        outline: none;
+        color: #000;
+        border-radius: 3px;
+        margin: 0px 5px;
+        padding: 5px 12px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #ddd;
+    }
+
+    #message {
+        padding: 20px;
+        font-weight: bolder;
+    }
+</style>
+
+<body>
+
+
+    <button onclick="selectBox(12, 12, 12)">Select Box</button>
+    <button onclick="removeBox()">Remove Box</button>
+    <button onclick="cleanBoxspace()">Clean boxspace</button>
+    <button onclick="cartItems()">Cart items</button>
+    <button onclick="cleanCart()">Clean cart</button>
+    <hr>
+    <p>Add products</p>
+
+    <button data-id="1" data-width="4" data-name="product 1" data-depth="4" data-length="4"
+        onclick="addProduct(this)">Add product 1</button>
+    <button data-id="2" data-width="4" data-name="product 2" data-depth="4" data-length="4"
+        onclick="addProduct(this)">Add product 2</button>
+    <button data-id="3" data-width="4" data-name="product 3" data-depth="4" data-length="4"
+        onclick="addProduct(this)">Add product 3</button>
+    <button data-id="4" data-width="4" data-name="product 4" data-depth="4" data-length="4"
+        onclick="addProduct(this)">Add product 4</button>
+    <button data-id="5" data-width="4" data-name="product 5" data-depth="4" data-length="4"
+        onclick="addProduct(this)">Add product 5</button>
+    <hr>
+    <p>Remove products</p>
+    <button data-id="1" onclick="removeProduct(this)">Remove product 1</button>
+    <button data-id="2" onclick="removeProduct(this)">Remove product 2</button>
+    <button data-id="3" onclick="removeProduct(this)">Remove product 3</button>
+    <button data-id="4" onclick="removeProduct(this)">Remove product 4</button>
+    <button data-id="5" onclick="removeProduct(this)">Remove product 5</button>
+
+    <p>Product qunatity increase</p>
+    <button data-id="1" onclick="quantityPlus(this)">Product 1</button>
+    <button data-id="2" onclick="quantityPlus(this)">Product 2</button>
+    <button data-id="3" onclick="quantityPlus(this)">Product 3</button>
+    <button data-id="4" onclick="quantityPlus(this)">Product 4</button>
+    <button data-id="5" onclick="quantityPlus(this)">Product 5</button>
+
+
+    <p>Product qunatity decrease</p>
+    <button data-id="1" onclick="quantityMinus(this)">Product 1</button>
+    <button data-id="2" onclick="quantityMinus(this)">Product 2</button>
+    <button data-id="3" onclick="quantityMinus(this)">Product 3</button>
+    <button data-id="4" onclick="quantityMinus(this)">Product 4</button>
+    <button data-id="5" onclick="quantityMinus(this)">Product 5</button>
+
+
+
+
+    <p id="result"></p>
+
+
+    <hr>
+    <div id="message"></div>
+
+    <hr>
+    Box space
+    <div id="boxspace"></div>
+
+
+    <script>
+        // Display message
+        const message = (msg) => {
+            document.getElementById("message").innerHTML = msg;
+        }
+
+        // This function will select a box 
+        const selectBox = (length, width, depth) => {
+            const box = localStorage.getItem('box');
+            const boxspace = localStorage.getItem('boxspace');
+            const cart = localStorage.getItem('cart');
+            if (box === undefined || box === null && boxspace === undefined || boxspace === null) {
+                // Set box value
+                localStorage.setItem('box', JSON.stringify({ length: length, depth: depth, width: width }));
+                // Set box space value
+                localStorage.setItem('boxspace', JSON.stringify({ length: 0, depth: 0, width: 0 }));
+                // Set cart value
+                localStorage.setItem('cart', JSON.stringify([]));
+                message("Box selected successfully")
+                getBoxspace()
+
+            } else {
+                message("Box already selected")
+            }
+        }
+
+        // This function will check box space (Not required) 
+        const getBoxspace = () => {
+            document.getElementById("boxspace").innerHTML = localStorage.getItem('boxspace');
+        }
+
+        getBoxspace()
+
+        // This function will set box space  
+        const appendBoxspace = (length, width, depth) => {
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'))
+            localStorage.setItem('boxspace', JSON.stringify({
+                length: boxspace["length"] + length,
+                width: boxspace["width"] + width,
+                depth: boxspace["depth"] + depth
+            }));
+            getBoxspace()
+        }
+
+        // This function will set box space  
+        const releaseBoxspace = (length, width, depth) => {
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'))
+
+            localStorage.setItem('boxspace', JSON.stringify({
+                length: boxspace["length"] - length,
+                width: boxspace["width"] - width,
+                depth: boxspace["depth"] - depth
+            }));
+
+
+            getBoxspace()
+        }
+
+        // This function will clean box space  
+        const cleanBoxspace = () => {
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'))
+            localStorage.setItem('boxspace', JSON.stringify({
+                length: 0,
+                width: 0,
+                depth: 0
+            }));
+            getBoxspace()
+        }
+
+        // This function will clear box, box space or box items selection
+        const removeBox = () => {
+            localStorage.removeItem("box");
+            localStorage.removeItem("boxspace");
+            localStorage.removeItem("cart");
+            getBoxspace()
+            message("Box removed successfully")
+        }
+
+        // This function will clean cart or release box space
+        const cleanCart = () => {
+            localStorage.removeItem("boxspace");
+            localStorage.removeItem("cart");
+            getBoxspace()
+            message("Cart items removed successfully")
+        }
+
+        // All Cart items
+        const cartItems = () => {
+            const cart = JSON.parse(localStorage.getItem('cart'))
+            if (cart == undefined || cart == null) {
+                // localStorage.setItem("cart", JSON.stringify([]));
+            } else {
+                document.getElementById("result").innerHTML = localStorage.getItem('cart')
+            }
+        }
+
+        cartItems();
+
+        // This function will check existance of a product 
+        const checkCart = (arr, id) => {
+            const { length } = arr;
+            const found = arr.some(val => val.id === id);
+            const result = (found) ? true : false
+            return result;
+        }
+
+
+        // Check space 
+        const checkSpace = () => {
+            const box = JSON.parse(localStorage.getItem('box'));
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'));
+            let boxVolume = box.length * box.width * box.depth;
+            let boxspaceVolume = boxspace.length * boxspace.width * boxspace.depth;
+
+            if (boxVolume > boxspaceVolume) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // This function will add product in cart 
+        const addProduct = (e) => {
+            const box = JSON.parse(localStorage.getItem('box'));
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const id = parseFloat(e.getAttribute("data-id"));
+            let width = parseFloat(e.getAttribute("data-width"));
+            let length = parseFloat(e.getAttribute("data-length"));
+            let depth = parseFloat(e.getAttribute("data-depth"));
+            let pname = e.getAttribute("data-name");
+
+            // let boxVolume = box.length * box.width * box.depth;
+            // let boxspaceVolume = boxspace.length * boxspace.width * boxspace.depth;
+            // let i;
+            // console.log("Box volume : ", boxVolume, "Box  space volume : ", boxspaceVolume, i++)
+
+
+            const product = {
+                id: id,
+                name: pname,
+                width: width,
+                length: length,
+                depth: depth,
+                quantity: 1
+            }
+
+            if (cart == null) {
+                message("Please select box...")
+            } else {
+                if (checkSpace()) {
+                    if (!checkCart(cart, id)) {
+                        // product box space
+                        appendBoxspace(length, width, depth);
+                        // Add product in local storage
+                        cart.push(product);
+                        localStorage.setItem("cart", JSON.stringify(cart));
+
+                        message("Product selected successfully")
+                    } else {
+                        message("This item already exists")
+                    }
+                } else {
+                    message("Box have no enough space")
+                }
+            }
+            cartItems();
+
+        }
+
+        // This function will remove product
+        const removeProduct = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const product = cart.filter(val => val.id === id)[0];
+            const products = cart.filter(val => val.id !== id);
+
+            for (let i = 1; i <= product.quantity; i++) {
+                releaseBoxspace(product.length, product.width, product.depth)
+            }
+
+            localStorage.setItem('cart', JSON.stringify(products));
+
+            cartItems();
+
+            message("Product removed successfully")
+        }
+
+        // This function will increase quantity
+        const quantityPlus = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const box = JSON.parse(localStorage.getItem('box'));
+            const boxspace = JSON.parse(localStorage.getItem('boxspace'));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            let product = cart.filter(val => val.id === id)[0];
+
+            if (product) {
+                if (boxspace.length < box.length && boxspace.width < box.width && boxspace.depth < box.depth) {
+                    product.quantity = ++product.quantity;
+                    // Append box space
+                    appendBoxspace(product.length, product.width, product.depth);
+                    message("")
+                } else {
+                    message("Box have no enough space")
+                }
+            }
+
+            // // then put it back.
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            cartItems();
+        }
+
+        // This function will decrease quantity
+        const quantityMinus = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            let product = cart.filter(val => val.id === id)[0];
+
+            if (product) {
+
+                if (product.quantity == 1 || product.quantity <= 1) {
+                    product.quantity = 1;
+                } else {
+                    product.quantity = --product.quantity;
+                    releaseBoxspace(product.length, product.width, product.depth)
+                }
+
+            }
+            // then put it back.
+            localStorage.setItem('cart', JSON.stringify(cart));
+            message("")
+            cartItems();
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

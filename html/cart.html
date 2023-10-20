@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom cart</title>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button {
+        background-color: none;
+        border: 1px solid #ddd;
+        outline: none;
+        color: #000;
+        border-radius: 3px;
+        margin: 0px 5px;
+        padding: 5px 12px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #ddd;
+    }
+
+    #message {
+        padding: 20px;
+        font-weight: bolder;
+    }
+</style>
+
+<body>
+
+
+    <button onclick="cartItems()">Cart items</button>
+    <button onclick="cleanCart()">Clean cart</button>
+    <hr>
+    <p>Add products</p>
+
+
+    <button data-id="1" onclick="quantityMinus(this)">-</button>
+    <button data-id="1" data-name="Team 1" data-category="wood" data-image="./assets/images/team/3.jpg" data-price="404"
+        onclick="addProduct(this)">Team 1</button>
+    <button data-id="1" onclick="quantityPlus(this)">+</button>
+
+    --
+
+    <button data-id="2" onclick="quantityMinus(this)">-</button>
+    <button data-id="2" data-name="Team 2" data-category="wood" data-image="./assets/images/team/1.jpg" data-price="500"
+        onclick="addProduct(this)">Team 2</button>
+    <button data-id="2" onclick="quantityPlus(this)">+</button>
+
+    <hr>
+    <div id="cart"></div>
+    <br>
+    <div id="message"></div>
+
+
+    <script>
+        // Display message
+        const message = (msg) => {
+            document.getElementById("message").innerHTML = msg;
+        }
+
+        // This function will clean cart
+        const cleanCart = () => {
+            localStorage.removeItem("cart");
+            cartItems();
+            document.getElementById("cart").innerHTML = "";
+            message("Cart items removed successfully")
+        }
+
+        // All Cart items
+        const cartItems = () => {
+            const cart = JSON.parse(localStorage.getItem('cart'))
+            if (cart == undefined || cart == null) {
+                localStorage.setItem("cart", JSON.stringify([]));
+            } else {
+                let template = "<ul>";
+                cart.forEach(function (item) {
+                    template += `
+                 <li>
+                 <img src="${item["image"]}" width="80" height="80"> <br>
+                 <b> Name :  <b> ${item["name"]} <br>
+                 <b> Price :  <b> ${item["price"]} <br>
+                 <b> Category :  <b> ${item["category"]} <br>
+                 <b> Quantity :  <b> ${item["quantity"]}  <br>
+                    <button data-id="${item["id"]}" onclick="removeProduct(this)">X</button>
+                 </li>
+                 `;
+                });
+                template += "</ul>"
+                document.getElementById("cart").innerHTML = template
+            }
+        }
+
+        cartItems();
+
+        // This function will check existance of a product 
+        const checkCart = (arr, id) => {
+            const { length } = arr;
+            const found = arr.some(val => val.id === id);
+            const result = (found) ? true : false
+            return result;
+        }
+
+        // This function will add product in cart 
+        const addProduct = (e) => {
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const id = parseFloat(e.getAttribute("data-id"));
+            const name = e.getAttribute("data-name");
+            const category = e.getAttribute("data-category");
+            const Image = e.getAttribute("data-Image");
+            const price = e.getAttribute("data-price");
+
+            const product = {
+                id: id,
+                name: name,
+                category: category,
+                image: Image,
+                price: price,
+                quantity: 1
+            }
+
+            if (cart == null) {
+                message("Please select box...")
+            } else if (!checkCart(cart, id)) {
+                // Add product in local storage
+                cart.push(product);
+                localStorage.setItem("cart", JSON.stringify(cart));
+
+                message("Product selected successfully")
+            } else {
+                message("This item already exists")
+            }
+
+            cartItems();
+
+        }
+
+        // This function will remove product
+        const removeProduct = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            const product = cart.filter(val => val.id === id)[0];
+            const products = cart.filter(val => val.id !== id);
+            localStorage.setItem('cart', JSON.stringify(products));
+            cartItems();
+            message("Product removed successfully")
+        }
+
+        // This function will increase quantity
+        const quantityPlus = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            let product = cart.filter(val => val.id === id)[0];
+            if (product) {
+                product.quantity = ++product.quantity;
+            }
+            // Then put it back.
+            localStorage.setItem('cart', JSON.stringify(cart));
+            cartItems();
+        }
+
+        // This function will decrease quantity
+        const quantityMinus = (e) => {
+            const id = parseFloat(e.getAttribute("data-id"));
+            const cart = JSON.parse(localStorage.getItem('cart'));
+            let product = cart.filter(val => val.id === id)[0];
+            if (product) {
+                if (product.quantity == 1 || product.quantity <= 1) {
+                    product.quantity = 1;
+                } else {
+                    product.quantity = --product.quantity;
+                }
+            }
+            // then put it back.
+            localStorage.setItem('cart', JSON.stringify(cart));
+            cartItems();
+        }
+
+    </script>
+
+
+</body>
+
+</html>

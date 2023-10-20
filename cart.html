@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        let cart = {
+            name: "cart",
+            items: undefined,
+            init() {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                if (cart == undefined || cart == null) {
+                    localStorage.setItem(this.name, JSON.stringify([]));
+                } else {
+                    this.items = JSON.parse(localStorage.getItem(this.name));
+                }
+            },
+            counter(key, value) {
+                const items = this.items.filter(item => item[key] == value)
+                return items.length
+            },
+            clean() {
+                localStorage.removeItem(this.name);
+                localStorage.setItem(this.name, JSON.stringify([]));
+            },
+            create(data) {
+                if (!this.is_exist(data.id)) {
+                    const cart = JSON.parse(localStorage.getItem(this.name));
+                    cart.push(data);
+                    localStorage.setItem(this.name, JSON.stringify(cart));
+                    this.init();
+                }
+            },
+            delete(id) {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                const products = cart.filter(item => item.id !== id);
+                localStorage.setItem(this.name, JSON.stringify(products));
+                this.init();
+            },
+            is_exist(id) {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                return (cart.some(item => item.id === id)) ? true : false;
+            },
+            qty_plus(id) {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                let product = cart.filter(item => item.id === id)[0];
+                if (product) {
+                    product.qty = ++product.qty;
+                    // Then put it back.
+                    localStorage.setItem(this.name, JSON.stringify(cart));
+                    this.init();
+                }
+            },
+            qty_minus(id) {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                let product = cart.filter(item => item.id === id)[0];
+                if (product) {
+                    product.qty = (product.qty == 1 || product.qty <= 1) ? 1 : --product.qty
+                    // Then put it back.
+                    localStorage.setItem(this.name, JSON.stringify(cart));
+                    this.init();
+                }
+            },
+            update(id, key, value) {
+                const cart = JSON.parse(localStorage.getItem(this.name));
+                let product = cart.filter(item => item.id === id)[0];
+                if (product) {
+                    product[key] = value;
+                    // Then put it back.
+                    localStorage.setItem(this.name, JSON.stringify(cart));
+                    this.init();
+                }
+            },
+            cart_items() {
+                return this.items.filter(item => item.heart == false);
+            },
+            wishlist_items() {
+                return this.items.filter(item => item.heart == true);
+            },
+            total() {
+                const items = this.items.filter(item => item.heart == false);
+                let total = 0;
+                items.forEach(item => {
+                    total += (item.discount == 0) ? item.price * item.qty : item.discount * item.qty;
+                });
+                return total;
+            },
+        }
+
+        cart.init();
+        cart.create({ id: 1, qty: 1, heart: false})
+        cart.delete(1)
+    </script>
+</body>
+
+</html>

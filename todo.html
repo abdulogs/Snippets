@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .done {
+        text-decoration: line-through;
+    }
+</style>
+
+<body>
+
+    <form action="" class="todo-form" id="create">
+        <label for="name">
+            <input type="text" id="name" id="name">
+        </label>
+        <input type="text" id="id" name="id">
+        <button id="btn">Add</button>
+    </form>
+
+    <ul id="todo-list"></ul>
+
+
+    <script>
+        let todo = {
+            name: "todo",
+            items: undefined,
+            init() {
+                const todo = JSON.parse(localStorage.getItem(this.name));
+                if (todo == undefined || todo == null) {
+                    localStorage.setItem(this.name, JSON.stringify([]));
+                } else {
+                    this.items = JSON.parse(localStorage.getItem(this.name));
+                }
+            },
+            clean() {
+                localStorage.removeItem(this.name);
+                localStorage.setItem(this.name, JSON.stringify([]));
+            },
+            is_exist(id) {
+                const todo = JSON.parse(localStorage.getItem(this.name));
+                return (todo.some(item => item.id === id)) ? true : false;
+            },
+            create(data) {
+                if (!this.is_exist(data.id)) {
+                    const todo = JSON.parse(localStorage.getItem(this.name));
+                    todo.push(data);
+                    localStorage.setItem(this.name, JSON.stringify(todo));
+                    this.init();
+                }
+            },
+            delete(id) {
+                const todo = JSON.parse(localStorage.getItem(this.name));
+                const items = todo.filter(item => item.id !== id);
+                localStorage.setItem(this.name, JSON.stringify(items));
+                this.init();
+            },
+            single(id) {
+                const todo = JSON.parse(localStorage.getItem(this.name));
+                return todo.filter(item => item.id === id)[0];
+            },
+            update(id, key, value) {
+                const todo = JSON.parse(localStorage.getItem(this.name));
+                let item = todo.filter(item => item.id === id)[0];
+                if (item) {
+                    item[key] = value;
+                    // Then put it back.
+                    localStorage.setItem(this.name, JSON.stringify(todo));
+                    this.init();
+                }
+            },
+        }
+
+        todo.init();
+
+        (function () {
+            let template = "";
+            todo.items.forEach(item => {
+                template += `
+                <li class="todo-item" data-id="${item.id}">
+                    ${item.name}  
+                    <button class="updateBtn" data-id="${item.id}">Edit</button>
+                    <button class="deleteBtn" data-id="${item.id}">x</button>
+                </li>`
+            });
+            document.getElementById("todo-list").innerHTML = template;
+        })();
+
+
+
+        function on(event, element, callback) {
+            document.addEventListener(event, function (e) {
+                const target = e.target.closest(element);
+                if (target) {
+                    return callback(e);
+                }
+            });
+            return this
+        }
+
+
+        on("submit", "#create", function (e) {
+            e.preventDefault()
+            const name = document.getElementById("name").value;
+            const id = todo.items + 1;                  
+            if (!name) {
+                alert("Please add something")
+                return
+            }
+            todo.create({ name: name, id: id, is_done: false });
+            let template = `
+                <li class="todo-item" data-id="${id}">
+                    ${name}  
+                    <button class="updateBtn" data-id="${id}">Edit</button>
+                    <button class="deleteBtn" data-id="${id}">x</button>
+                </li>`
+            document.getElementById("todo-list").insertAdjacentHTML("afterbegin", template)
+        });
+
+        on("click", ".todo-item", function (e) {
+            e.target.classList.toggle("done");
+            const id = e.target.getAttribute("data-id");
+            todo.update(id, "is_done", true)
+        });
+
+        
+        on("click", ".updateBtn", function (e) {
+            e.preventDefault()
+            const target = e.target;
+            const id = target.getAttribute("data-id");
+            const item = todo.single(id);
+            document.getElementById("id").value = id;
+            document.getElementById("name").value = item.name
+        });
+
+        on("click", ".deleteBtn", function (e) {
+            e.preventDefault()
+            const target = e.target;
+            const id = target.getAttribute("data-id");
+            todo.delete(id);
+            document.querySelectorAll(".todo-item")[id].remove()
+            // e.target.parentNode.remove()
+        });
+
+
+    </script>
+</body>
+
+</html>

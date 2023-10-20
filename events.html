@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <button onclick=""></button>
+
+
+    <script>
+
+        function on(event, selector, callback) {
+            document.addEventListener(event, function (e) {
+                const target = e.target;
+                if (target.closest(selector)) {
+                    callback(e)
+                }
+            })
+        }
+
+
+        on("click", "button", function(e){
+            alert("You clicked a button")
+        });
+
+        // document.addEventListener("click", function (e) {
+        //     const target = e.target;
+        //     if (target.matches("button")) {
+        //         alert("You clicked a button")
+        //     }
+        // })
+
+        // document.querySelector("button").addEventListener(function () {
+
+        // });
+
+    </script>
+</body>
+
+</html>

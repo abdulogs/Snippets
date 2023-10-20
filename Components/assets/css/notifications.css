@@ -1,0 +1,118 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial;
+}
+.container{
+    background-color: rgba(0, 0, 0, 0.1);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+.content{
+    width: 450px;
+    height: 80vh;
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+}
+
+.card__head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 20px;
+    box-shadow: rgba(9, 30, 66, 0.2) 0px 4px 8px -2px;
+}
+.card__head h2{
+    font-size: 18px;
+}
+.card__head a{
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 5px;
+    border-radius: 4px;
+    color: rgb(0, 129, 180);
+}
+.card__head a:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.card_notifications ul{
+    list-style-type: none;
+}
+
+.card_notifications ul li{
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 10px 15px;
+}
+.card_notifications ul li:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+.avatar{
+    position: relative;
+}
+.avatar img{
+    height: 45px;
+    width: 45px;
+    border-radius: 50px;
+    object-fit: cover;
+}
+.avatar .status__badge:after{
+    content: '';
+    height: 5px;
+    width: 5px;
+    border: 2px solid white;
+    border-radius: 50px;
+    padding: 2px;
+    background-color: rgb(12, 119, 161);
+    position: absolute;
+    left: 0px;
+}
+.notification__info{
+    margin-left: 10px;
+    width: 100%;
+}
+.notification__info .name_duration {
+    display: flex;
+    justify-content: space-between;
+}
+.notification__info .name_duration h3{
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 600;
+}
+.notification__info .name_duration span{
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.4);
+    font-weight: 600;
+}
+.notification__info .detail p{
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.5);
+    padding-top: 4px;
+}
+.notification__info .detail p a{
+    text-decoration: none;
+    color: rgb(0, 129, 180);
+}
+.notification__info .detail p a:hover{
+    text-decoration: underline;
+}
+@media screen and (max-width: 768px) {
+    .content{
+        width: 100%;
+        margin: 0px 10px;
+    }
+}
